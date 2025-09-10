@@ -6,12 +6,17 @@
     <title>e-Card</title>
     
     <!-- Tags para comportamento de Web App (PWA) -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="USP e-Card">
     <meta name="application-name" content="USP e-Card">
     <meta name="theme-color" content="#FADDAF">
-    <!-- Ícone do App na tela inicial -->
+    
+    <!-- Link para o Manifesto (essencial para Android) -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Ícone do App na tela inicial do iPhone -->
     <link rel="apple-touch-icon" href="ecard.png">
 
     <!-- Tailwind CSS for styling -->
@@ -215,7 +220,7 @@
             const today = new Date();
             const expirationDate = new Date(today);
             
-            expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+            // A data de validade agora reflete a data atual, sem adicionar um ano.
             expirationDate.setHours(23, 59, 0, 0);
 
             const day = String(expirationDate.getDate()).padStart(2, '0');
@@ -320,4 +325,5 @@
     </script>
 </body>
 </html>
+
 
