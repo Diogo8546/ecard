@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>USP e-Card</title>
+    
+    <!-- Tags para comportamento de Web App (PWA) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="USP e-Card">
+    <meta name="application-name" content="USP e-Card">
+    <!-- Cor de fundo ajustada para um amarelo mais forte -->
+    <meta name="theme-color" content="#FADDAF">
+    <link rel="apple-touch-icon" href="usplogo.png">
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Libraries for QR Code and Barcode generation -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        /* Custom font and colors to match the screenshot */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        html, body {
+            -webkit-tap-highlight-color: transparent; /* Remove o destaque azul ao tocar em links/botões no mobile */
+        }
+        /* Corrigido para um amarelo mais forte */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FADDAF; 
+        }
+        .card-bg {
+            background-color: #FADDAF;
+        }
+        .profile-pic {
+            width: 120px;
+            height: 150px;
+            object-fit: cover;
+        }
+         #barcode-container svg {
+            width: 100%;
+            height: auto;
+            max-height: 100px;
+        }
+        /* A cor do texto principal e do cabeçalho foi ajustada para preto para melhor contraste */
+        .main-text {
+            color: #000000;
+        }
+        header {
+             color: #000000;
+        }
+    </style>
+</head>
+<body class="card-bg">
+
+    <!-- Main Card Component -->
+    <div class="flex flex-col h-screen main-text">
+        <!-- Header -->
+        <header class="flex justify-between items-center p-4">
+            <h1 class="text-xl font-medium">e-Card</h1>
+            <div class="flex items-center space-x-4">
+                <button id="toggle-button" class="text-2xl">
+                     <i class="fa-solid fa-barcode"></i>
+                </button>
+                <button id="menu-button" class="text-xl">
+                    <i class="fa-solid fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Card Body -->
+        <main class="flex-grow flex flex-col items-center text-center px-6 pt-4 pb-8">
+            <!-- USP Logo -->
+            <img id="logo-display" src="usplogo.jpg" alt="Logo da USP" class="h-16 mb-1" onerror="this.onerror=null;this.src='https://placehold.co/200x80/FADDAF/333333?text=usplogo.png';">
+            <p class="text-sm font-medium">Universidade de São Paulo</p>
+
+            <p class="font-bold my-4 tracking-widest">ALUNO</p>
+
+            <!-- Profile Picture -->
+            <img id="profile-pic-display" src="https://placehold.co/120x150/cccccc/333333?text=Foto" alt="Foto do Aluno" class="profile-pic rounded-lg shadow-md">
+
+            <!-- Student Info -->
+            <div class="mt-4">
+                <h2 id="name-display" class="text-xl font-bold">Diogo Dias Furtado</h2>
+                <p id="number-display" class="text-lg">12690601</p>
+                <p class="mt-2">Faculdade de Filosofia, Ciências e Letras</p>
+                <p>de Rib Preto</p>
+                <p class="font-bold mt-2">GRADUAÇÃO</p>
+            </div>
+            
+            <!-- Wrapper for code and footer -->
+            <div class="mt-8 w-full">
+                <!-- QR Code / Barcode Container -->
+                <div class="w-full max-w-[150px] mx-auto cursor-pointer">
+                     <div id="qrcode-container" class="p-2 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
+                     <div id="barcode-container" class="hidden w-full bg-white p-2 rounded-lg shadow-inner flex items-center justify-center">
+                        <svg id="barcode"></svg>
+                     </div>
+                </div>
+
+                <!-- Expiration Text -->
+                <div id="footer-container" class="pt-2">
+                    <p id="expiration-text" class="text-center text-xs">
+                         <!-- O texto será definido via JS -->
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Editing Information -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="relative p-6 bg-white rounded-lg shadow-md w-full max-w-md">
+            <button id="close-modal-button" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">&times;</button>
+            <h3 class="text-lg font-bold mb-4 text-center">Editar Informações</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="name-input" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <input type="text" id="name-input" value="Diogo Dias Furtado" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="number-input" class="block text-sm font-medium text-gray-700">Número USP</label>
+                    <input type="text" id="number-input" value="12690601" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                     <label for="photo-input" class="block text-sm font-medium text-gray-700">Foto de Perfil</label>
+                     <input type="file" id="photo-input" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <div>
+                     <label for="logo-input" class="block text-sm font-medium text-gray-700">Logo</label>
+                     <input type="file" id="logo-input" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Zooming Code -->
+    <div id="zoom-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 cursor-pointer">
+        <div id="zoom-content" class="bg-white p-4 rounded-lg">
+            <!-- Larger QR/Barcode will be generated here -->
+        </div>
+    </div>
+
+
+    <script>
+        // DOM Elements
+        const toggleButton = document.getElementById('toggle-button');
+        const qrContainer = document.getElementById('qrcode-container');
+        const barcodeContainer = document.getElementById('barcode-container');
+        const footerContainer = document.getElementById('footer-container');
+        const expirationText = document.getElementById('expiration-text');
+        const nameDisplay = document.getElementById('name-display');
+        const numberDisplay = document.getElementById('number-display');
+        const profilePicDisplay = document.getElementById('profile-pic-display');
+        const logoDisplay = document.getElementById('logo-display');
+
+        const nameInput = document.getElementById('name-input');
+        const numberInput = document.getElementById('number-input');
+        const photoInput = document.getElementById('photo-input');
+        const logoInput = document.getElementById('logo-input');
+
+        // Modal elements
+        const menuButton = document.getElementById('menu-button');
+        const editModal = document.getElementById('edit-modal');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const zoomModal = document.getElementById('zoom-modal');
+        const zoomContent = document.getElementById('zoom-content');
+
+        let isQrVisible = true;
+
+        // Function to set expiration date
+        const setExpirationText = () => {
+            // A data de hoje é 9 de Setembro de 2025.
+            const expirationDate = new Date('2025-09-09T23:59:00');
+            const day = String(expirationDate.getDate()).padStart(2, '0');
+            const month = String(expirationDate.getMonth() + 1).padStart(2, '0');
+            const year = expirationDate.getFullYear();
+            const hours = String(expirationDate.getHours()).padStart(2, '0');
+            const minutes = String(expirationDate.getMinutes()).padStart(2, '0');
+            expirationText.textContent = `Expira em ${day}/${month}/${year} ${hours}:${minutes}`;
+        };
+
+        // Function to generate codes
+        const generateCodes = (value) => {
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: value, width: 128, height: 128, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+            });
+            try {
+                 JsBarcode("#barcode", value, {
+                    format: "CODE128", lineColor: "#000", width: 2, height: 80, displayValue: false
+                });
+            } catch (e) {
+                console.error("Error generating barcode:", e);
+                barcodeContainer.innerHTML = '<p class="text-red-500 text-xs">Valor inválido</p>';
+            }
+        };
+
+        // Toggle visibility between QR and Barcode
+        toggleButton.addEventListener('click', () => {
+            isQrVisible = !isQrVisible;
+            qrContainer.classList.toggle('hidden');
+            barcodeContainer.classList.toggle('hidden');
+            footerContainer.classList.toggle('hidden');
+            toggleButton.innerHTML = isQrVisible ? '<i class="fa-solid fa-barcode"></i>' : '<i class="fa-solid fa-qrcode"></i>';
+        });
+
+        // --- Update Logic ---
+        nameInput.addEventListener('input', () => { nameDisplay.textContent = nameInput.value || 'Seu Nome Aqui'; });
+        numberInput.addEventListener('input', () => {
+            const studentNumber = numberInput.value || '00000000';
+            numberDisplay.textContent = studentNumber;
+            generateCodes(studentNumber);
+        });
+        const handleFileSelect = (event, displayElement) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { displayElement.src = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        };
+        photoInput.addEventListener('change', (e) => handleFileSelect(e, profilePicDisplay));
+        logoInput.addEventListener('change', (e) => handleFileSelect(e, logoDisplay));
+        
+        // --- Modal Logic ---
+        menuButton.addEventListener('click', () => { editModal.classList.remove('hidden'); });
+        closeModalButton.addEventListener('click', () => { editModal.classList.add('hidden'); });
+        editModal.addEventListener('click', (event) => {
+            if (event.target === editModal) editModal.classList.add('hidden');
+        });
+
+        // --- Zoom Logic ---
+        qrContainer.addEventListener('click', () => {
+            zoomContent.innerHTML = '';
+            new QRCode(zoomContent, {
+                text: numberInput.value || '00000000', width: 256, height: 256, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+            });
+            zoomModal.classList.remove('hidden');
+        });
+        barcodeContainer.addEventListener('click', () => {
+            zoomContent.innerHTML = '';
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.id = 'zoomed-barcode';
+            zoomContent.appendChild(svg);
+            try {
+                JsBarcode("#zoomed-barcode", numberInput.value || '00000000', {
+                    format: "CODE128", lineColor: "#000", width: 3, height: 120, displayValue: false
+                });
+            } catch (e) {
+                 zoomContent.innerHTML = '<p class="text-red-500 text-xs">Valor inválido</p>';
+            }
+            zoomModal.classList.remove('hidden');
+        });
+        zoomModal.addEventListener('click', () => {
+            zoomModal.classList.add('hidden');
+            zoomContent.innerHTML = '';
+        });
+
+        // Initial generation on page load
+        window.onload = () => {
+            generateCodes(numberInput.value);
+            setExpirationText();
+            if (!isQrVisible) footerContainer.classList.add('hidden');
+        };
+    </script>
+</body>
+</html>
+
