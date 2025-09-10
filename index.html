@@ -10,7 +10,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="USP e-Card">
     <meta name="application-name" content="USP e-Card">
-    <!-- Cor de fundo ajustada para um amarelo mais forte -->
     <meta name="theme-color" content="#FADDAF">
     <link rel="apple-touch-icon" href="usplogo.png">
 
@@ -22,12 +21,11 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
-        /* Custom font and colors to match the screenshot */
+        /* Custom font and colors */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         html, body {
-            -webkit-tap-highlight-color: transparent; /* Remove o destaque azul ao tocar em links/botões no mobile */
+            -webkit-tap-highlight-color: transparent;
         }
-        /* Corrigido para um amarelo mais forte */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #FADDAF; 
@@ -45,10 +43,10 @@
             height: auto;
             max-height: 100px;
         }
-        /* A cor do texto principal e do cabeçalho foi ajustada para preto para melhor contraste */
         .main-text {
             color: #000000;
         }
+        /* Cor dos ícones no cabeçalho */
         header {
              color: #000000;
         }
@@ -59,14 +57,22 @@
     <!-- Main Card Component -->
     <div class="flex flex-col h-screen main-text">
         <!-- Header -->
-        <header class="flex justify-between items-center p-4">
-            <h1 class="text-xl font-medium">e-Card</h1>
-            <div class="flex items-center space-x-4">
+        <header class="relative flex justify-center items-center p-4">
+            <!-- Icons on the left -->
+            <div class="absolute left-4 flex items-center space-x-4">
+                <button id="login-button" class="text-2xl">
+                    <i class="fa-solid fa-user-circle"></i>
+                </button>
+                <button id="edit-button" class="text-2xl">
+                    <i class="fa-solid fa-id-card"></i>
+                </button>
+            </div>
+            <!-- Title centered and in white -->
+            <h1 class="text-xl font-medium text-white">e-Card</h1>
+            <!-- Icon on the right -->
+            <div class="absolute right-4 flex items-center">
                 <button id="toggle-button" class="text-2xl">
                      <i class="fa-solid fa-barcode"></i>
-                </button>
-                <button id="menu-button" class="text-xl">
-                    <i class="fa-solid fa-ellipsis-v"></i>
                 </button>
             </div>
         </header>
@@ -86,17 +92,18 @@
             <div class="mt-4">
                 <h2 id="name-display" class="text-xl font-bold">Diogo Dias Furtado</h2>
                 <p id="number-display" class="text-lg">12690601</p>
-                <p class="mt-2">Faculdade de Filosofia, Ciências e Letras</p>
-                <p>de Rib Preto</p>
-                <p class="font-bold mt-2">GRADUAÇÃO</p>
+                <!-- Faculty name now bold -->
+                <p class="mt-2 font-bold">Faculdade de Filosofia, Ciências e Letras</p>
+                <p class="font-bold">de Rib Preto</p>
             </div>
             
             <!-- Wrapper for code and footer -->
-            <div class="mt-8 w-full">
+            <div class="mt-auto pt-6 w-full">
                 <!-- QR Code / Barcode Container -->
-                <div class="w-full max-w-[150px] mx-auto cursor-pointer">
+                <div class="w-full max-w-[170px] mx-auto cursor-pointer">
                      <div id="qrcode-container" class="p-2 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
-                     <div id="barcode-container" class="hidden w-full bg-white p-2 rounded-lg shadow-inner flex items-center justify-center">
+                     <!-- Adjusted barcode container to match QR container height -->
+                     <div id="barcode-container" class="hidden w-full bg-white p-2 rounded-lg shadow-inner flex items-center justify-center" style="height: 166px;">
                         <svg id="barcode"></svg>
                      </div>
                 </div>
@@ -163,18 +170,24 @@
         const logoInput = document.getElementById('logo-input');
 
         // Modal elements
-        const menuButton = document.getElementById('menu-button');
+        const editButton = document.getElementById('edit-button');
         const editModal = document.getElementById('edit-modal');
         const closeModalButton = document.getElementById('close-modal-button');
         const zoomModal = document.getElementById('zoom-modal');
         const zoomContent = document.getElementById('zoom-content');
+        // const loginButton = document.getElementById('login-button'); // Ready for future functionality
 
         let isQrVisible = true;
 
-        // Function to set expiration date
+        // Function to set expiration date (dynamically)
         const setExpirationText = () => {
-            // A data de hoje é 9 de Setembro de 2025.
-            const expirationDate = new Date('2025-09-09T23:59:00');
+            const today = new Date();
+            const expirationDate = new Date(today);
+            
+            // Set expiration to 1 year from today at 23:59
+            expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+            expirationDate.setHours(23, 59, 0, 0);
+
             const day = String(expirationDate.getDate()).padStart(2, '0');
             const month = String(expirationDate.getMonth() + 1).padStart(2, '0');
             const year = expirationDate.getFullYear();
@@ -187,11 +200,11 @@
         const generateCodes = (value) => {
             qrContainer.innerHTML = '';
             new QRCode(qrContainer, {
-                text: value, width: 128, height: 128, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+                text: value, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
             });
             try {
                  JsBarcode("#barcode", value, {
-                    format: "CODE128", lineColor: "#000", width: 2, height: 80, displayValue: false
+                    format: "CODE128", lineColor: "#000", width: 2.2, height: 80, displayValue: false
                 });
             } catch (e) {
                 console.error("Error generating barcode:", e);
@@ -227,7 +240,7 @@
         logoInput.addEventListener('change', (e) => handleFileSelect(e, logoDisplay));
         
         // --- Modal Logic ---
-        menuButton.addEventListener('click', () => { editModal.classList.remove('hidden'); });
+        editButton.addEventListener('click', () => { editModal.classList.remove('hidden'); });
         closeModalButton.addEventListener('click', () => { editModal.classList.add('hidden'); });
         editModal.addEventListener('click', (event) => {
             if (event.target === editModal) editModal.classList.add('hidden');
@@ -269,5 +282,4 @@
     </script>
 </body>
 </html>
-
 
