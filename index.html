@@ -11,7 +11,8 @@
     <meta name="apple-mobile-web-app-title" content="USP e-Card">
     <meta name="application-name" content="USP e-Card">
     <meta name="theme-color" content="#FADDAF">
-    <link rel="apple-touch-icon" href="usplogo.png">
+    <!-- Ícone do App na tela inicial -->
+    <link rel="apple-touch-icon" href="ecard.png">
 
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -178,6 +179,37 @@
 
         let isQrVisible = true;
 
+        // --- Data Persistence Logic ---
+        const saveData = () => {
+            localStorage.setItem('ecard-name', nameInput.value);
+            localStorage.setItem('ecard-number', numberInput.value);
+            // Images are saved as Base64 strings
+            localStorage.setItem('ecard-photo', profilePicDisplay.src);
+            localStorage.setItem('ecard-logo', logoDisplay.src);
+        };
+
+        const loadData = () => {
+            const savedName = localStorage.getItem('ecard-name');
+            const savedNumber = localStorage.getItem('ecard-number');
+            const savedPhoto = localStorage.getItem('ecard-photo');
+            const savedLogo = localStorage.getItem('ecard-logo');
+
+            if (savedName) {
+                nameDisplay.textContent = savedName;
+                nameInput.value = savedName;
+            }
+            if (savedNumber) {
+                numberDisplay.textContent = savedNumber;
+                numberInput.value = savedNumber;
+            }
+            if (savedPhoto) {
+                profilePicDisplay.src = savedPhoto;
+            }
+            if (savedLogo) {
+                logoDisplay.src = savedLogo;
+            }
+        };
+
         // Function to set expiration date (dynamically)
         const setExpirationText = () => {
             const today = new Date();
@@ -220,17 +252,24 @@
         });
 
         // --- Update Logic ---
-        nameInput.addEventListener('input', () => { nameDisplay.textContent = nameInput.value || 'Seu Nome Aqui'; });
+        nameInput.addEventListener('input', () => { 
+            nameDisplay.textContent = nameInput.value || 'Seu Nome Aqui'; 
+            saveData();
+        });
         numberInput.addEventListener('input', () => {
             const studentNumber = numberInput.value || '00000000';
             numberDisplay.textContent = studentNumber;
             generateCodes(studentNumber);
+            saveData();
         });
         const handleFileSelect = (event, displayElement) => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => { displayElement.src = e.target.result; };
+                reader.onload = (e) => { 
+                    displayElement.src = e.target.result; 
+                    saveData();
+                };
                 reader.readAsDataURL(file);
             }
         };
@@ -273,6 +312,7 @@
 
         // Initial generation on page load
         window.onload = () => {
+            loadData();
             generateCodes(numberInput.value);
             setExpirationText();
             if (!isQrVisible) footerContainer.classList.add('hidden');
