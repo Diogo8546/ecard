@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>USP e-Card</title>
+    <title>e-Card</title>
     
     <!-- Tags para comportamento de Web App (PWA) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,17 +38,16 @@
             height: 150px;
             object-fit: cover;
         }
-         #barcode-container svg {
-            width: 100%;
-            height: auto;
-            max-height: 100px;
-        }
         .main-text {
             color: #000000;
         }
         /* Cor dos ícones no cabeçalho */
         header {
              color: #000000;
+        }
+        /* Ajuste para altura do container do código */
+        .code-container {
+            min-height: 210px; 
         }
     </style>
 </head>
@@ -78,38 +77,38 @@
         </header>
 
         <!-- Card Body -->
-        <main class="flex-grow flex flex-col items-center text-center px-6 pt-4 pb-8">
-            <!-- USP Logo -->
-            <img id="logo-display" src="usplogo.png" alt="Logo da USP" class="h-16 mb-1" onerror="this.onerror=null;this.src='https://placehold.co/200x80/FADDAF/333333?text=usplogo.png';">
-            <p class="text-sm font-medium">Universidade de São Paulo</p>
+        <main class="flex-grow flex flex-col items-center justify-between text-center px-4 pb-4">
+            <!-- Top Section -->
+            <div class="w-full flex flex-col items-center">
+                <!-- USP Logo -->
+                <img id="logo-display" src="usplogo.png" alt="Logo da USP" class="h-16" onerror="this.onerror=null;this.src='https://placehold.co/200x80/FADDAF/333333?text=usplogo.png';">
+                <p class="text-sm font-medium">Universidade de São Paulo</p>
 
-            <p class="font-bold my-4 tracking-widest">ALUNO</p>
+                <p class="font-bold my-2 tracking-widest">ALUNO</p>
 
-            <!-- Profile Picture -->
-            <img id="profile-pic-display" src="https://placehold.co/120x150/cccccc/333333?text=Foto" alt="Foto do Aluno" class="profile-pic rounded-lg shadow-md">
+                <!-- Profile Picture -->
+                <img id="profile-pic-display" src="https://placehold.co/120x150/cccccc/333333?text=Foto" alt="Foto do Aluno" class="profile-pic rounded-lg shadow-md">
 
-            <!-- Student Info -->
-            <div class="mt-4">
-                <h2 id="name-display" class="text-xl font-bold">Diogo Dias Furtado</h2>
-                <p id="number-display" class="text-lg">12690601</p>
-                <!-- Faculty name now bold -->
-                <p class="mt-2 font-bold">Faculdade de Filosofia, Ciências e Letras</p>
-                <p class="font-bold">de Rib Preto</p>
+                <!-- Student Info -->
+                <div class="mt-3">
+                    <h2 id="name-display" class="text-2xl font-bold">Diogo Dias Furtado</h2>
+                    <p id="number-display" class="text-xl">12690601</p>
+                    <p class="mt-2 text-base font-bold">Faculdade de Filosofia, Ciências e Letras de Rib Preto</p>
+                </div>
             </div>
             
-            <!-- Wrapper for code and footer -->
-            <div class="mt-auto pt-6 w-full">
+            <!-- Bottom Section (Code) -->
+            <div class="w-full mt-4">
                 <!-- QR Code / Barcode Container -->
-                <div class="w-full max-w-[170px] mx-auto cursor-pointer">
-                     <div id="qrcode-container" class="p-2 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
-                     <!-- Adjusted barcode container to match QR container height -->
-                     <div id="barcode-container" class="hidden w-full bg-white p-2 rounded-lg shadow-inner flex items-center justify-center" style="height: 166px;">
+                <div class="w-full max-w-[200px] mx-auto cursor-pointer code-container flex justify-center items-center">
+                     <div id="qrcode-container" class="p-3 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
+                     <div id="barcode-container" class="hidden w-full bg-white p-3 rounded-lg shadow-inner flex items-center justify-center">
                         <svg id="barcode"></svg>
                      </div>
                 </div>
 
                 <!-- Expiration Text -->
-                <div id="footer-container" class="pt-2">
+                <div id="footer-container" class="pt-1">
                     <p id="expiration-text" class="text-center text-xs">
                          <!-- O texto será definido via JS -->
                     </p>
@@ -184,7 +183,6 @@
             const today = new Date();
             const expirationDate = new Date(today);
             
-            // Set expiration to 1 year from today at 23:59
             expirationDate.setFullYear(expirationDate.getFullYear() + 1);
             expirationDate.setHours(23, 59, 0, 0);
 
@@ -200,11 +198,11 @@
         const generateCodes = (value) => {
             qrContainer.innerHTML = '';
             new QRCode(qrContainer, {
-                text: value, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+                text: value, width: 200, height: 200, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
             });
             try {
                  JsBarcode("#barcode", value, {
-                    format: "CODE128", lineColor: "#000", width: 2.2, height: 80, displayValue: false
+                    format: "CODE128", lineColor: "#000", width: 2.5, height: 100, displayValue: false
                 });
             } catch (e) {
                 console.error("Error generating barcode:", e);
@@ -250,7 +248,7 @@
         qrContainer.addEventListener('click', () => {
             zoomContent.innerHTML = '';
             new QRCode(zoomContent, {
-                text: numberInput.value || '00000000', width: 256, height: 256, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+                text: numberInput.value || '00000000', width: 280, height: 280, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
             });
             zoomModal.classList.remove('hidden');
         });
