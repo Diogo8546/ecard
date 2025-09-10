@@ -77,8 +77,8 @@
         </header>
 
         <!-- Card Body -->
-        <main class="flex-grow flex flex-col items-center justify-between text-center px-4 pb-4">
-            <!-- Top Section -->
+        <main class="flex-grow flex flex-col items-center justify-center text-center px-4 pb-4">
+            <!-- Unified Content Container -->
             <div class="w-full flex flex-col items-center">
                 <!-- USP Logo -->
                 <img id="logo-display" src="usplogo.png" alt="Logo da USP" class="h-16" onerror="this.onerror=null;this.src='https://placehold.co/200x80/FADDAF/333333?text=usplogo.png';">
@@ -93,25 +93,25 @@
                 <div class="mt-3">
                     <h2 id="name-display" class="text-2xl font-bold">Diogo Dias Furtado</h2>
                     <p id="number-display" class="text-xl">12690601</p>
-                    <p class="mt-2 text-base font-bold">Faculdade de Filosofia, Ciências e Letras de Rib Preto</p>
+                    <p class="mt-2 text-lg font-bold">Faculdade de Filosofia, Ciências e Letras de Rib Preto</p>
                 </div>
-            </div>
-            
-            <!-- Bottom Section (Code) -->
-            <div class="w-full mt-4">
-                <!-- QR Code / Barcode Container -->
-                <div class="w-full max-w-[200px] mx-auto cursor-pointer code-container flex justify-center items-center">
-                     <div id="qrcode-container" class="p-3 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
-                     <div id="barcode-container" class="hidden w-full bg-white p-3 rounded-lg shadow-inner flex items-center justify-center">
-                        <svg id="barcode"></svg>
-                     </div>
-                </div>
+                
+                <!-- Bottom Section (Code) -->
+                <div class="w-full mt-4">
+                    <!-- QR Code / Barcode Container -->
+                    <div class="w-full max-w-[200px] mx-auto cursor-pointer code-container flex justify-center items-center">
+                         <div id="qrcode-container" class="p-3 bg-white rounded-lg shadow-inner flex justify-center items-center"></div>
+                         <div id="barcode-container" class="hidden w-full bg-white p-3 rounded-lg shadow-inner flex items-center justify-center">
+                            <svg id="barcode"></svg>
+                         </div>
+                    </div>
 
-                <!-- Expiration Text -->
-                <div id="footer-container" class="pt-1">
-                    <p id="expiration-text" class="text-center text-xs">
-                         <!-- O texto será definido via JS -->
-                    </p>
+                    <!-- Expiration Text -->
+                    <div id="footer-container" class="pt-1">
+                        <p id="expiration-text" class="text-center text-xs">
+                             <!-- O texto será definido via JS -->
+                        </p>
+                    </div>
                 </div>
             </div>
         </main>
